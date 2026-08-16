@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ledger &mdash; Loan Approval Predictor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="brand">
+      <span class="brand-mark">&#9670;</span>
+      <span class="brand-name">Ledger</span>
+    </div>
+    <span class="masthead-tag">Automated Credit Decisioning</span>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="intake">
+    <div class="intake-head">
+      <span class="eyebrow">Application No. <span id="app-number">000000</span></span>
+      <h1>Loan Application</h1>
+      <p class="lede">Fill in the applicant's particulars below. Each field corresponds to an underwriting factor used in the decision.</p>
+    </div>
+
+    <form id="loan-form" autocomplete="off">
+
+      <div class="field-group">
+        <span class="group-label">01 &mdash; Applicant</span>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">Dependents</span>
+            <select name="dependents" required>
+              <option value="" disabled selected>Select</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Education</span>
+            <select name="education" required>
+              <option value="" disabled selected>Select</option>
+              <option value="Graduate">Graduate</option>
+              <option value="Not Graduate">Not Graduate</option>
+            </select>
+          </label>
+        </div>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">Self-Employed</span>
+            <select name="selfEmployed" required>
+              <option value="" disabled selected>Select</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Annual Income <em>&#8377;</em></span>
+            <input type="number" name="income" min="0" step="1" placeholder="e.g. 5000000" required>
+          </label>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <span class="group-label">02 &mdash; Loan Terms</span>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">Loan Amount <em>&#8377;</em></span>
+            <input type="number" name="loanAmount" min="1" step="1" placeholder="e.g. 10000000" required>
+          </label>
+          <label class="field">
+            <span class="field-label">Loan Term <em>years</em></span>
+            <select name="loanTerm" required>
+              <option value="" disabled selected>Select</option>
+              <option value="2">2 years</option>
+              <option value="4">4 years</option>
+              <option value="6">6 years</option>
+              <option value="8">8 years</option>
+              <option value="10">10 years</option>
+              <option value="12">12 years</option>
+              <option value="14">14 years</option>
+              <option value="16">16 years</option>
+              <option value="18">18 years</option>
+              <option value="20">20 years</option>
+            </select>
+          </label>
+        </div>
+        <div class="field-row single">
+          <label class="field">
+            <span class="field-label">CIBIL Score <em>300&ndash;900</em></span>
+            <input type="number" name="cibilScore" id="cibil-input" min="300" max="900" step="1" placeholder="e.g. 750" required>
+            <span class="field-hint" id="cibil-hint">Credit score used by Indian lenders. 750+ is generally considered strong.</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <span class="group-label">03 &mdash; Assets</span>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">Residential Assets <em>&#8377;</em></span>
+            <input type="number" name="residentialAssets" min="0" step="1" placeholder="0 if none" required>
+          </label>
+          <label class="field">
+            <span class="field-label">Commercial Assets <em>&#8377;</em></span>
+            <input type="number" name="commercialAssets" min="0" step="1" placeholder="0 if none" required>
+          </label>
+        </div>
+        <div class="field-row">
+          <label class="field">
+            <span class="field-label">Luxury Assets <em>&#8377;</em></span>
+            <input type="number" name="luxuryAssets" min="0" step="1" placeholder="0 if none" required>
+          </label>
+          <label class="field">
+            <span class="field-label">Bank Assets <em>&#8377;</em></span>
+            <input type="number" name="bankAssets" min="0" step="1" placeholder="0 if none" required>
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn">
+        <span>Submit for Review</span>
+        <span class="submit-arrow">&rarr;</span>
+      </button>
+    </form>
+  </section>
+
+  <section class="decision" id="decision-panel">
+    <div class="slip">
+      <div class="slip-head">
+        <span class="eyebrow">Decision Slip</span>
+        <span class="slip-date" id="slip-date"></span>
+      </div>
+
+      <div class="slip-body" id="slip-empty">
+        <div class="watermark">&#9670;</div>
+        <p>Awaiting application details.<br>Your decision will be rendered here.</p>
+      </div>
+
+      <div class="slip-body slip-result hidden" id="slip-result">
+        <div class="stamp-zone">
+          <div class="stamp" id="stamp">
+            <span id="stamp-text">APPROVED</span>
+          </div>
+        </div>
+
+        <div class="confidence">
+          <div class="confidence-label">
+            <span>Model Confidence</span>
+            <span id="confidence-value">0%</span>
+          </div>
+          <div class="confidence-track">
+            <div class="confidence-fill" id="confidence-fill"></div>
+          </div>
+        </div>
+
+        <p class="slip-note" id="slip-note"></p>
+      </div>
+
+      <div class="slip-body slip-loading hidden" id="slip-loading">
+        <div class="pen"></div>
+        <p>Processing application&hellip;</p>
+      </div>
+
+      <div class="slip-body slip-error hidden" id="slip-error">
+        <p id="error-text"></p>
+      </div>
+    </div>
+
+    <p class="fine-print">Prediction generated by a machine learning model trained on 4,269 historical loan records. For demonstration purposes only &mdash; not a real lending decision.</p>
+  </section>
+
+</main>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

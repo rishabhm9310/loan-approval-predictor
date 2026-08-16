@@ -6,7 +6,6 @@ picks the best one, and saves it to disk along with the scaler.
 """
 
 import joblib
-import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.preprocessing import StandardScaler
@@ -24,23 +23,22 @@ from preprocess import load_and_clean_data
 def main():
     df = load_and_clean_data()
 
-    X = df.drop(columns=["Loan_Status"])
-    y = df["Loan_Status"]
+    X = df.drop(columns=["loan_status"])
+    y = df["loan_status"]
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y
     )
 
-    # Scale features (helps Logistic Regression converge and perform well)
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
 
     models = {
         "Logistic Regression": LogisticRegression(max_iter=1000, random_state=42),
-        "Decision Tree": DecisionTreeClassifier(max_depth=5, random_state=42),
+        "Decision Tree": DecisionTreeClassifier(max_depth=6, random_state=42),
         "Random Forest": RandomForestClassifier(
-            n_estimators=200, max_depth=6, random_state=42
+            n_estimators=200, max_depth=8, random_state=42
         ),
     }
 
@@ -52,7 +50,6 @@ def main():
     print("=" * 60)
 
     for name, model in models.items():
-        # Tree-based models don't need scaling, but it doesn't hurt them either
         model.fit(X_train_scaled, y_train)
         preds = model.predict(X_test_scaled)
 
@@ -89,13 +86,10 @@ def main():
     print("=" * 60)
     print(results_df.to_string(index=False))
 
-    # Pick the best model by F1-score (balances precision & recall - important
-    # since approving a bad loan and rejecting a good one have different costs)
     best_model_name = results_df.iloc[0]["Model"]
     best_model = trained_models[best_model_name]
     print(f"\nBest model: {best_model_name}")
 
-    # Save artifacts
     joblib.dump(best_model, "loan_model.pkl")
     joblib.dump(scaler, "scaler.pkl")
     joblib.dump(list(X.columns), "feature_columns.pkl")
@@ -103,7 +97,6 @@ def main():
 
     print("\nSaved: loan_model.pkl, scaler.pkl, feature_columns.pkl, model_comparison_results.csv")
 
-    # Feature importance (only meaningful for tree-based models)
     if hasattr(best_model, "feature_importances_"):
         importance_df = pd.DataFrame({
             "Feature": X.columns,
